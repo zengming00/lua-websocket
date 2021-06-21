@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <script>
+        // const ws = new WebSocket('ws://localhost:8888/');
+        const ws = new WebSocket('ws://192.168.11.1:8888/');
+        ws.binaryType = "arraybuffer";
+
+
+        ws.onclose = function (t, ev) {
+            console.log('onclose');
+        }
+        ws.onerror = function (t, ev) {
+            console.log('onerror');
+        }
+        ws.onopen = function (t, ev) {
+            console.log('onopen');
+        }
+        ws.onmessage = function (event) {
+            console.log('onmessage:');
+            if (event.data instanceof ArrayBuffer) {
+                // binary frame
+                const view = new DataView(event.data);
+                console.log(event.data);
+            } else {
+                // text frame
+                console.log(event.data);
+            }
+        }
+        function sendBinary() {
+            console.log("sendBinary()")
+            const data = new Uint8Array(65535);
+            data.forEach(function (v, i, arr) {
+                arr[i] = i;
+            })
+            ws.send(data);
+        }
+        function sendText() {
+            console.log("sendText()")
+            ws.send("hello websocket");
+        }
+    </script>
+    <button onclick="sendBinary()">sendBinary</button>
+    <button onclick="sendText()">sendText</button>
+</body>
+
+</html>
